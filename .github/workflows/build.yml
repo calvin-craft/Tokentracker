@@ -1,0 +1,105 @@
+# Builds the installers for Windows, macOS and Linux and attaches them to the
+# run as artifacts. Run it by hand from the Actions tab, or push an annotated
+# tag like v1.0.0: then it also publishes a GitHub release with all of them,
+# using the tag's message as the release notes.
+name: build
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            args: ""
+            bundle: src-tauri/target/release/bundle
+          - os: macos-latest
+            args: --target universal-apple-darwin
+            bundle: src-tauri/target/universal-apple-darwin/release/bundle
+          # The oldest supported Ubuntu, so the build runs on older glibc too.
+          - os: ubuntu-22.04
+            args: ""
+            bundle: src-tauri/target/release/bundle
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Linux libraries
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libayatana-appindicator3-dev \
+            librsvg2-dev libdbus-1-dev libxdo-dev libssl-dev patchelf
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ runner.os == 'macOS' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - run: npm ci
+
+      - name: Build
+        run: npx tauri build ${{ matrix.args }}
+
+      # After the build: the app embeds the built frontend, even in tests.
+      - name: Tests
+        working-directory: src-tauri
+        run: cargo test
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tokentracker-${{ runner.os }}
+          path: |
+            ${{ matrix.bundle }}/nsis/*.exe
+            ${{ matrix.bundle }}/dmg/*.dmg
+            ${{ matrix.bundle }}/deb/*.deb
+            ${{ matrix.bundle }}/rpm/*.rpm
+            ${{ matrix.bundle }}/appimage/*.AppImage
+          if-no-files-found: error
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      # The checkout has the tagged commit, not the tag's message.
+      - name: Release notes from the tag
+        id: notes
+        run: |
+          echo "name=TokenTracker ${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          git fetch --force origin "refs/tags/${GITHUB_REF_NAME}:refs/tags/${GITHUB_REF_NAME}"
+          git tag -l --format='%(contents:body)' "$GITHUB_REF_NAME" > notes.md
+          cat notes.md
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: installers
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ steps.notes.outputs.name }}
+          body_path: notes.md
+          files: |
+            installers/**/*.exe
+            installers/**/*.dmg
+            installers/**/*.deb
+            installers/**/*.rpm
+            installers/**/*.AppImage
+          fail_on_unmatched_files: true

@@ -1,0 +1,719 @@
+:root {
+  --text: #f2f3f5;
+  --muted: #9aa0aa;
+  --faint: #6b717c;
+  --line: rgba(255, 255, 255, 0.09);
+  --track: rgba(255, 255, 255, 0.1);
+  --low: #4fd1a5;
+  --mid: #f0b354;
+  --high: #f2706b;
+  --codex: #19c39c;
+  --claude: #d97757;
+  --gemini: #5b8def;
+  --grok: #c9ccd4;
+  --antigravity: #a78bfa;
+  --soon: #4fd1a5;
+  --near: #8fb0ff;
+  --accent: #6c8cff;
+  font-family: "Segoe UI Variable Text", "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  font-size: 13px;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: transparent;
+  user-select: none;
+  cursor: default;
+  overflow: hidden;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+/* ───────── Widget ───────── */
+
+.card {
+  --alpha: 0.85;
+  width: 300px;
+  padding: 10px 14px 10px;
+  background: rgba(20, 21, 26, var(--alpha));
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin: 0 -6px 4px 0;
+}
+
+.title {
+  flex: 1;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--faint);
+  text-transform: uppercase;
+  padding: 4px 0;
+}
+
+.icon-btn {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--faint);
+  cursor: pointer;
+}
+
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+}
+
+.icon-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.spin {
+  animation: spin 0.7s linear;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.provider {
+  padding: 8px 0 10px;
+  border-top: 1px solid var(--line);
+}
+
+.provider-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 8px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.dot.codex {
+  background: var(--codex);
+}
+
+.dot.claude {
+  background: var(--claude);
+}
+
+.dot.gemini {
+  background: var(--gemini);
+}
+
+.dot.grok {
+  background: var(--grok);
+}
+
+.dot.antigravity {
+  background: var(--antigravity);
+}
+
+.provider-name {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.badge {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted);
+  padding: 1px 6px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+
+.warn {
+  margin-left: auto;
+  font-size: 10px;
+  color: var(--mid);
+}
+
+/* The reset is getting close: within 3 hours / 3 days, then 1 hour / 1 day. */
+.limit-reset.mid {
+  color: var(--near);
+}
+
+.limit-reset.soon {
+  color: var(--soon);
+  font-weight: 600;
+}
+
+/* Heading of limits that come from another app, inside an account's card. */
+.group-cap {
+  margin: 12px 0 8px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--faint);
+  text-transform: uppercase;
+}
+
+.limit + .hint,
+.hint + .group-cap {
+  margin-top: 8px;
+}
+
+.hint.note {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--faint);
+}
+
+.limit + .limit {
+  margin-top: 8px;
+}
+
+.limit-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.limit-label {
+  font-size: 12px;
+  color: var(--muted);
+  flex: none;
+}
+
+.limit-reset {
+  flex: 1;
+  font-size: 11px;
+  color: var(--faint);
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.limit-pct {
+  flex: none;
+  min-width: 34px;
+  text-align: right;
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.limit-pct.mid {
+  color: var(--mid);
+}
+
+.limit-pct.high {
+  color: var(--high);
+}
+
+.track {
+  height: 5px;
+  border-radius: 999px;
+  background: var(--track);
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  min-width: 2px;
+  border-radius: 999px;
+  background: var(--low);
+  transition: width 0.4s ease;
+}
+
+.fill.mid {
+  background: var(--mid);
+}
+
+.fill.high {
+  background: var(--high);
+}
+
+.hint {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.link {
+  margin-left: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.card-foot {
+  min-height: 14px;
+  padding-top: 6px;
+  border-top: 1px solid var(--line);
+  font-size: 10px;
+  color: var(--faint);
+  text-align: right;
+}
+
+/* ───────── Settings ───────── */
+
+body[data-view="settings"] {
+  background: #17181d;
+}
+
+/* The page itself never scrolls (the widget must not), so the settings
+   view is its own scroll container. */
+.settings {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  border: 1px solid var(--line);
+}
+
+/* Stands in for the title bar: drag it to move the popup. */
+.settings-head {
+  display: flex;
+  flex: none;
+  align-items: center;
+  padding: 10px 12px 8px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.settings-head .title {
+  flex: 1;
+}
+
+.settings-body {
+  flex: 1;
+  min-height: 0;
+  padding: 0 20px 24px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.settings h2 {
+  margin: 18px 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--faint);
+  text-transform: uppercase;
+}
+
+.group {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+}
+
+.row + .row {
+  border-top: 1px solid var(--line);
+}
+
+.row.disabled {
+  opacity: 0.5;
+}
+
+.row > .dot {
+  align-self: flex-start;
+  margin-top: 5px;
+}
+
+.row-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.row-title {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.row-sub {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.row-sub.ok {
+  color: var(--low);
+}
+
+.row-sub.needs_login,
+.row-sub.error {
+  color: var(--mid);
+}
+
+.row-note {
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--faint);
+}
+
+.row-actions {
+  margin-top: 8px;
+}
+
+.btn {
+  padding: 5px 12px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.btn.primary {
+  background: var(--accent);
+  border-color: transparent;
+  color: #fff;
+  font-weight: 600;
+}
+
+.btn.primary:hover {
+  filter: brightness(1.1);
+}
+
+.toggle {
+  flex: none;
+  width: 36px;
+  height: 20px;
+  padding: 2px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.toggle span {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.15s;
+}
+
+.toggle.on {
+  background: var(--accent);
+}
+
+.toggle.on span {
+  transform: translateX(16px);
+}
+
+select {
+  padding: 5px 8px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #23252c;
+  color: var(--text);
+  font: inherit;
+  font-size: 12px;
+}
+
+input[type="range"] {
+  width: 130px;
+  accent-color: var(--accent);
+}
+
+.range-value {
+  width: 36px;
+  text-align: right;
+  font-size: 12px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ───────── Accounts ───────── */
+
+.provider-label {
+  min-width: 0;
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.row-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.label-input {
+  flex: 1;
+  min-width: 0;
+  max-width: 130px;
+  padding: 2px 6px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 400;
+  user-select: text;
+}
+
+.label-input::placeholder {
+  color: var(--faint);
+}
+
+.label-input:hover {
+  border-color: var(--line);
+}
+
+.label-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn.danger {
+  background: var(--high);
+  border-color: transparent;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* ───────── Reordering ───────── */
+
+.move {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: none;
+}
+
+.move-btn {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.move-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
+}
+
+.move-btn:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+.move-btn svg {
+  width: 12px;
+  height: 12px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ───────── Compact widget ───────── */
+
+.compact-list {
+  border-top: 1px solid var(--line);
+  padding: 4px 0 6px;
+}
+
+.compact {
+  padding: 5px 0;
+}
+
+.compact-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.compact-line + .compact-line {
+  margin-top: 5px;
+}
+
+/* Keeps a second line's caption under the account name. */
+.dot-space {
+  flex: none;
+  width: 8px;
+}
+
+.compact-name.compact-sub {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--faint);
+}
+
+.compact-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.compact-name .provider-label {
+  font-weight: 400;
+}
+
+.compact .warn {
+  margin-left: 0;
+  font-weight: 700;
+}
+
+.compact-win {
+  flex: none;
+  width: 66px;
+}
+
+.compact-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 3px;
+  font-size: 10px;
+  color: var(--faint);
+}
+
+.compact-head strong {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.compact-head strong.mid {
+  color: var(--mid);
+}
+
+.compact-head strong.high {
+  color: var(--high);
+}
+
+.compact-win .track {
+  height: 3px;
+}
+
+.compact-state {
+  flex: none;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.compact-state .link {
+  margin-left: 0;
+}
+
+/* ───────── Billing ───────── */
+
+.billing {
+  margin: 8px 0 0;
+  font-size: 11px;
+  color: var(--faint);
+}
+
+.billing.mid,
+.compact-bill.mid {
+  color: var(--near);
+}
+
+.billing.soon,
+.compact-bill.soon {
+  color: var(--soon);
+  font-weight: 600;
+}
+
+.compact-bill {
+  flex: none;
+  font-size: 10px;
+  color: var(--faint);
+}
+
+.billing-field {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.billing-next {
+  font-size: 11px;
+  color: var(--faint);
+}
